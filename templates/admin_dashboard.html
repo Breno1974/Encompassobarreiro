@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Administrativo - Encompasso Barreiro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Fonte opcional -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f8f9fa;
+      min-height: 100vh;
+    }
+
+    .navbar {
+      background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 1rem 0;
+    }
+
+    .navbar-brand {
+      font-weight: 600;
+      font-size: 1.3rem;
+      color: white !important;
+    }
+
+    .navbar-nav .nav-link {
+      color: rgba(255, 255, 255, 0.9) !important;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      margin: 0 0.2rem;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: white !important;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .main-container {
+      padding: 2rem 0;
+    }
+
+    .admin-header {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e9ecef;
+    }
+
+    .admin-header h1 {
+      color: #1a1a1a;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .admin-header p {
+      color: #6c757d;
+      margin-bottom: 0;
+    }
+
+    .nav-tabs {
+      border-bottom: 2px solid #e9ecef;
+      margin-bottom: 2rem;
+    }
+
+    .nav-tabs .nav-link {
+      border: none;
+      color: #6c757d;
+      font-weight: 500;
+      padding: 1rem 1.5rem;
+      transition: all 0.3s ease;
+      border-radius: 8px 8px 0 0;
+      margin-right: 0.5rem;
+    }
+
+    .nav-tabs .nav-link:hover {
+      border-color: transparent;
+      color: #007bff;
+      background-color: #f8f9fa;
+    }
+
+    .nav-tabs .nav-link.active {
+      color: #007bff;
+      background-color: white;
+      border-color: #e9ecef #e9ecef white;
+      border-width: 2px 2px 2px 2px;
+    }
+
+    .filters-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e9ecef;
+    }
+
+    .filters-title {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-control, .form-select {
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.1);
+    }
+
+    .btn-filter {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      border: none;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-filter:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+      color: white;
+    }
+
+    .btn-clear {
+      background: #6c757d;
+      border: none;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-clear:hover {
+      background: #5a6268;
+      color: white;
+    }
+
+    .data-card {
+      background: white;
+      border-radius: 12px;
+      padding: 0;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e9ecef;
+      overflow: hidden;
+    }
+
+    .data-card-header {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 1.5rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .data-card-title {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .table-responsive {
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .table {
+      margin-bottom: 0;
+    }
+
+    .table thead th {
+      background-color: #f8f9fa;
+      border-bottom: 2px solid #e9ecef;
+      color: #495057;
+      font-weight: 600;
+      padding: 1rem 0.75rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .table tbody td {
+      padding: 1rem 0.75rem;
+      vertical-align: middle;
+      border-bottom: 1px solid #f1f3f5;
+    }
+
+    .table tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .btn-action {
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin: 0 0.2rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-edit {
+      background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+      border: none;
+      color: #212529;
+    }
+
+    .btn-edit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+      color: #212529;
+    }
+
+    .btn-delete {
+      background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+      border: none;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+      color: white;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+    }
+
+    .badge-pix {
+      background-color: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .badge-fiado {
+      background-color: #fff3e0;
+      color: #f57c00;
+    }
+
+    .badge-dinheiro {
+      background-color: #e8f5e8;
+      color: #2e7d32;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: #6c757d;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: #6c757d;
+    }
+
+    .password-section {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e9ecef;
+    }
+
+    .password-title {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-change-password {
+      background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
+      border: none;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-change-password:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
+      color: white;
+    }
+
+    .alert {
+      border-radius: 8px;
+      border: none;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        padding: 1rem 0;
+      }
+
+      .admin-header {
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .filters-card {
+        padding: 1rem;
+      }
+
+      .data-card-header {
+        padding: 1rem;
+      }
+
+      .table-responsive {
+        font-size: 0.875rem;
+      }
+
+      .btn-action {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <i class="fas fa-cogs me-2"></i>
+        Painel Administrativo
+      </a>
+      
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="/">
+          <i class="fas fa-home me-1"></i>Início
+        </a>
+        <a class="nav-link" href="{{ url_for("admin_logout") }}">
+          <i class="fas fa-sign-out-alt me-1"></i>Sair
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container main-container">
+    <!-- Header -->
+    <div class="admin-header">
+      <h1><i class="fas fa-tachometer-alt me-2"></i>Dashboard Administrativo</h1>
+      <p>Gerencie materiais, inscrições e servidores do II Encompasso CSA Barreiro</p>
+    </div>
+
+    <!-- Mensagens de Flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ "danger" if category == "error" else "success" }} alert-dismissible fade show" role="alert">
+            <i class="fas fa-{{ "exclamation-triangle" if category == "error" else "check-circle" }} me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="materiais-tab" data-bs-toggle="tab" data-bs-target="#materiais" 
+                type="button" role="tab" aria-controls="materiais" aria-selected="true">
+          <i class="fas fa-box me-2"></i>Materiais
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="inscricoes-tab" data-bs-toggle="tab" data-bs-target="#inscricoes" 
+                type="button" role="tab" aria-controls="inscricoes" aria-selected="false">
+          <i class="fas fa-user-plus me-2"></i>Inscrições
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="servidores-tab" data-bs-toggle="tab" data-bs-target="#servidores" 
+                type="button" role="tab" aria-controls="servidores" aria-selected="false">
+          <i class="fas fa-users-cog me-2"></i>Servidores
+        </button>
+      </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="adminTabsContent">
+      <!-- Materiais Tab -->
+      <div class="tab-pane fade show active" id="materiais" role="tabpanel" aria-labelledby="materiais-tab">
+        <!-- Filtros Materiais -->
+        <div class="filters-card">
+          <h5 class="filters-title">
+            <i class="fas fa-filter"></i>Filtros - Materiais
+          </h5>
+          <form id="filtrosMateriais">
+            <div class="row">
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Servidor</label>
+                <input type="text" class="form-control" name="servidor" placeholder="Nome do servidor">
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Nome</label>
+                <input type="text" class="form-control" name="nome" placeholder="Nome do cliente">
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Telefone</label>
+                <input type="text" class="form-control" name="telefone" placeholder="Telefone">
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Tipo Pagamento</label>
+                <select class="form-select" name="tipo_pagamento">
+                  <option value="">Todos</option>
+                  <option value="pix">PIX</option>
+                  <option value="dinheiro">Dinheiro</option>
+                  <option value="fiado">Fiado</option>
+                </select>
+              </div>
+            </div>
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-filter">
+                <i class="fas fa-search me-2"></i>Filtrar
+              </button>
+              <button type="button" class="btn btn-clear" onclick="limparFiltrosMateriais()">
+                <i class="fas fa-times me-2"></i>Limpar
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tabela Materiais -->
+        <div class="data-card">
+          <div class="data-card-header">
+            <h5 class="data-card-title">
+              <i class="fas fa-list"></i>Lista de Materiais
+              <span class="badge bg-primary ms-2" id="countMateriais">0</span>
+            </h5>
+          </div>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Servidor</th>
+                  <th>Nome</th>
+                  <th>Telefone</th>
+                  <th>Materiais</th>
+                  <th>Total</th>
+                  <th>Pagamento</th>
+                  <th>Vencimento</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaMateriais">
+                <tr>
+                  <td colspan="9" class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Carregando dados...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inscrições Tab -->
+      <div class="tab-pane fade" id="inscricoes" role="tabpanel" aria-labelledby="inscricoes-tab">
+        <!-- Filtros Inscrições -->
+        <div class="filters-card">
+          <h5 class="filters-title">
+            <i class="fas fa-filter"></i>Filtros - Inscrições
+          </h5>
+          <form id="filtrosInscricoes">
+            <div class="row">
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Servidor</label>
+                <input type="text" class="form-control" name="servidor" placeholder="Nome do servidor">
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Nome</label>
+                <input type="text" class="form-control" name="nome" placeholder="Nome do cliente">
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Telefone</label>
+                <input type="text" class="form-control" name="telefone" placeholder="Telefone">
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Tipo Pagamento</label>
+                <select class="form-select" name="tipo_pagamento">
+                  <option value="">Todos</option>
+                  <option value="pix">PIX</option>
+                  <option value="dinheiro">Dinheiro</option>
+                  <option value="fiado">Fiado</option>
+                </select>
+              </div>
+            </div>
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-filter">
+                <i class="fas fa-search me-2"></i>Filtrar
+              </button>
+              <button type="button" class="btn btn-clear" onclick="limparFiltrosInscricoes()">
+                <i class="fas fa-times me-2"></i>Limpar
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tabela Inscrições -->
+        <div class="data-card">
+          <div class="data-card-header d-flex justify-content-between align-items-center">
+            <h5 class="data-card-title">
+              <i class="fas fa-list"></i>Lista de Inscrições
+              <span class="badge bg-primary ms-2" id="countInscricoes">0</span>
+            </h5>
+            <a href="/admin/exportar/inscricoes" class="btn btn-success btn-sm">
+              <i class="fas fa-file-excel me-2"></i>Exportar para Excel
+            </a>
+          </div>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Servidor</th>
+                  <th>Nome</th>
+                  <th>Telefone</th>
+                  <th>Quarto</th>
+                  <th>Valor Total</th>
+                  <th>Entrada</th>
+                  <th>Restante</th>
+                  <th>Pagamento</th>
+                  <th>Vencimento</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaInscricoes">
+                <tr>
+                  <td colspan="11" class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Carregando dados...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Servidores Tab -->
+      <div class="tab-pane fade" id="servidores" role="tabpanel" aria-labelledby="servidores-tab">
+        <!-- Filtros Servidores -->
+        <div class="filters-card">
+          <h5 class="filters-title">
+            <i class="fas fa-filter"></i>Filtros - Servidores
+          </h5>
+          <form id="filtrosServidores">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Nome</label>
+                <input type="text" class="form-control" name="nome" placeholder="Nome do servidor">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Status</label>
+                <select class="form-select" name="status">
+                  <option value="">Todos</option>
+                  <option value="ativo">Ativo</option>
+                  <option value="inativo">Inativo</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-filter me-2">
+                  <i class="fas fa-search me-2"></i>Filtrar
+                </button>
+                <button type="button" class="btn btn-clear" onclick="limparFiltrosServidores()">
+                  <i class="fas fa-times me-2"></i>Limpar
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tabela Servidores -->
+        <div class="data-card">
+          <div class="data-card-header d-flex justify-content-between align-items-center">
+            <h5 class="data-card-title">
+              <i class="fas fa-list"></i>Lista de Servidores
+              <span class="badge bg-primary ms-2" id="countServidores">0</span>
+            </h5>
+            <button class="btn btn-success" onclick="abrirModalServidor()">
+              <i class="fas fa-plus me-2"></i>Adicionar Servidor
+            </button>
+          </div>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nome</th>
+                  <th>Status</th>
+                  <th>Materiais Vinculados</th>
+                  <th>Inscrições Vinculadas</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaServidores">
+                <tr>
+                  <td colspan="6" class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Carregando dados...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modais -->
+  <!-- Modal Servidor -->
+  <div class="modal fade" id="modalServidor" tabindex="-1" aria-labelledby="modalServidorLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalServidorLabel">Adicionar/Editar Servidor</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formServidor">
+            <input type="hidden" id="servidorId">
+            <div class="mb-3">
+              <label for="servidorNome" class="form-label">Nome do Servidor</label>
+              <input type="text" class="form-control" id="servidorNome" required>
+            </div>
+            <div class="mb-3" id="servidorStatusDiv" style="display: none;">
+              <label for="servidorAtivo" class="form-label">Status</label>
+              <select class="form-select" id="servidorAtivo">
+                <option value="true">Ativo</option>
+                <option value="false">Inativo</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" onclick="salvarServidor()">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Confirmação Exclusão -->
+  <div class="modal fade" id="modalConfirmacaoExclusao" tabindex="-1" aria-labelledby="modalConfirmacaoExclusaoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalConfirmacaoExclusaoLabel">Confirmar Exclusão</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Tem certeza que deseja excluir <strong id="itemExcluirNome"></strong> (<span id="itemExcluirTipo"></span>)? Esta ação não pode ser desfeita.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="btnConfirmarExclusao">Excluir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let dadosMateriais = [];
+    let dadosInscricoes = [];
+    let dadosServidores = [];
+
+    document.addEventListener('DOMContentLoaded', function() {
+    // --- ETAPA 1: Lógica de Ativação e Carregamento Inicial ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const activeTabName = urlParams.get('active_tab');
+
+    if (activeTabName) {
+        // Se uma aba foi especificada na URL
+        const tabToActivate = document.querySelector(`#adminTabs button[data-bs-target="#${activeTabName}"]`);
+        if (tabToActivate) {
+            const tab = new bootstrap.Tab(tabToActivate);
+            tab.show();
+            // Carrega os dados da aba especificada
+            if (activeTabName === 'inscricoes') {
+                carregarInscricoes();
+            } else if (activeTabName === 'servidores') {
+                carregarServidores();
+            } else {
+                carregarMateriais();
+            }
+        }
+    } else {
+        // Se nenhuma aba foi especificada, carrega a padrão (Materiais)
+        carregarMateriais();
+    }
+
+    // --- ETAPA 2: Listeners para cliques manuais nas abas ---
+    // (Este código permanece o mesmo, garantindo que os cliques continuem funcionando)
+    document.getElementById('materiais-tab').addEventListener('shown.bs.tab', function (event) {
+        carregarMateriais();
+    });
+    document.getElementById('inscricoes-tab').addEventListener('shown.bs.tab', function (event) {
+        carregarInscricoes();
+    });
+    document.getElementById('servidores-tab').addEventListener('shown.bs.tab', function (event) {
+        carregarServidores();
+    });
+
+    // --- ETAPA 3: Listeners para os filtros ---
+    // (Este código também permanece o mesmo)
+    document.getElementById('filtrosMateriais').addEventListener('submit', function(e) {
+        e.preventDefault();
+        carregarMateriais();
+    });
+    document.getElementById('filtrosInscricoes').addEventListener('submit', function(e) {
+        e.preventDefault();
+        carregarInscricoes();
+    });
+    document.getElementById('filtrosServidores').addEventListener('submit', function(e) {
+        e.preventDefault();
+        carregarServidores();
+    });
+});
+    // ==================== FUNÇÕES GERAIS ====================
+
+    function formatarData(dataString) {
+      if (!dataString) return '';
+      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      try {
+        // Tenta parsear como YYYY-MM-DD HH:MM:SS ou YYYY-MM-DD
+        const date = new Date(dataString.replace(' ', 'T'));
+        if (isNaN(date.getTime())) {
+          // Se falhar, tenta parsear como DD/MM/YYYY
+          const parts = dataString.split('/');
+          if (parts.length === 3) {
+            const d = parseInt(parts[0]);
+            const m = parseInt(parts[1]) - 1; // Mês é 0-indexed
+            const y = parseInt(parts[2]);
+            const dateFromParts = new Date(y, m, d);
+            if (!isNaN(dateFromParts.getTime())) {
+              return dateFromParts.toLocaleDateString('pt-BR', options);
+            }
+          }
+          return dataString; // Retorna a string original se não conseguir formatar
+        }
+        return date.toLocaleDateString('pt-BR', options);
+      } catch (e) {
+        console.error("Erro ao formatar data:", dataString, e);
+        return dataString; // Em caso de erro, retorna a string original
+      }
+    }
+
+    function formatarMoeda(valor) {
+      if (valor === null || valor === undefined) return 'R$ 0,00';
+      return parseFloat(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function confirmarExclusao(tipo, id, nome) {
+      document.getElementById('itemExcluirTipo').textContent = tipo;
+      document.getElementById('itemExcluirNome').textContent = nome;
+      const btnConfirmar = document.getElementById('btnConfirmarExclusao');
+      btnConfirmar.onclick = function() {
+        if (tipo === 'material') {
+          excluirMaterial(id);
+        } else if (tipo === 'inscricao') {
+          excluirInscricao(id);
+        } else if (tipo === 'servidor') {
+          excluirServidor(id);
+        }
+        var modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmacaoExclusao'));
+        modal.hide();
+      };
+      var myModal = new bootstrap.Modal(document.getElementById('modalConfirmacaoExclusao'));
+      myModal.show();
+    }
+
+    function showAlert(message, type) {
+      const alertPlaceholder = document.createElement('div');
+      alertPlaceholder.innerHTML = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+          <i class="fas fa-${type === 'danger' ? 'exclamation-triangle' : 'check-circle'}" me-2></i>
+          ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      `;
+      document.querySelector('.main-container').prepend(alertPlaceholder);
+      setTimeout(() => alertPlaceholder.remove(), 5000); // Remove after 5 seconds
+    }
+
+    // ==================== MATERIAIS ====================
+
+    function carregarMateriais() {
+      const tbody = document.getElementById('tabelaMateriais');
+      tbody.innerHTML = '<tr><td colspan="9" class="loading-state"><i class="fas fa-spinner fa-spin"></i> Carregando dados...</td></tr>';
+
+      const form = document.getElementById('filtrosMateriais');
+      const params = new URLSearchParams(new FormData(form)).toString();
+
+      fetch(`/admin/api/materiais?${params}`)
+        .then(response => response.json())
+        .then(data => {
+          dadosMateriais = data;
+          renderizarTabelaMateriais();
+        })
+        .catch(error => {
+          console.error('Erro ao carregar materiais:', error);
+          tbody.innerHTML = '<tr><td colspan="9" class="empty-state"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar dados.</td></tr>';
+        });
+    }
+
+    function renderizarTabelaMateriais() {
+      const tbody = document.getElementById('tabelaMateriais');
+      const count = document.getElementById('countMateriais');
+      
+      count.textContent = dadosMateriais.length;
+
+      if (dadosMateriais.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="empty-state"><i class="fas fa-inbox"></i><br>Nenhum material encontrado</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = dadosMateriais.map(material => `
+        <tr>
+          <td>${material.id}</td>
+          <td>${material.servidor}</td>
+          <td>${material.nome}</td>
+          <td>${material.telefone}</td>
+          <td>${material.detalhes_materiais}</td>
+          <td>${formatarMoeda(material.total)}</td>
+          
+          <td>
+          <div><span class="badge badge-${material.tipo_pagamento}">${material.tipo_pagamento.replace('_', ' ').toUpperCase()}</span></div>
+          <small class="text-muted" style="font-size: 0.75em;">${formatarData(material.data_criacao)}</small>
+          </td>
+          
+          <td>
+            ${material.data_vencimento ? formatarData(material.data_vencimento) : '-'}
+          </td>
+          
+          <td>
+            <a href="/admin/materiais/${material.id}/edit" class="btn btn-action btn-edit" title="Editar">
+              <i class="fas fa-edit"></i>
+            </a>
+            <button class="btn btn-action btn-delete" onclick="confirmarExclusao('material', ${material.id}, '${material.nome}')" title="Excluir">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function limparFiltrosMateriais() {
+      document.getElementById('filtrosMateriais').reset();
+      carregarMateriais();
+    }
+
+    function editarMaterial(id) {
+      // Esta função não é mais necessária, pois o link direto é usado
+      // showAlert('Funcionalidade de edição de material ainda não implementada.', 'info');
+    }
+
+    function excluirMaterial(id) {
+  // A URL correta deve apontar para a rota de exclusão que espera um POST
+  fetch(`/admin/material/${id}/delete`, {
+    method: 'POST' // O método deve ser POST, como definido na sua rota Flask
+  })
+  .then(response => {
+    if (response.ok) {
+      showAlert('Material excluído com sucesso!', 'success');
+      carregarMateriais();
+    } else {
+      response.json().then(data => {
+        showAlert(`Erro ao excluir material: ${data.error || response.statusText}`, 'danger');
+      });
+    }
+  })
+  .catch(error => {
+    console.error('Erro ao excluir material:', error);
+    showAlert('Erro de comunicação ao excluir material.', 'danger');
+  });
+}
+
+    // ==================== INSCRIÇÕES ====================
+
+function carregarInscricoes() {
+  const tbody = document.getElementById('tabelaInscricoes');
+  tbody.innerHTML = '<tr><td colspan="11" class="loading-state"><i class="fas fa-spinner fa-spin"></i> Carregando dados...</td></tr>';
+
+  const form = document.getElementById('filtrosInscricoes');
+  const params = new URLSearchParams(new FormData(form)).toString();
+
+  fetch(`/admin/api/inscricoes?${params}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Erro na API: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      dadosInscricoes = data;
+      renderizarTabelaInscricoes();
+    })
+    .catch(error => {
+      console.error('Erro ao carregar inscrições:', error);
+      tbody.innerHTML = '<tr><td colspan="11" class="empty-state"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar dados.</td></tr>';
+    });
+}
+     function renderizarTabelaInscricoes() {
+      const tbody = document.getElementById('tabelaInscricoes');
+      const count = document.getElementById('countInscricoes');
+      
+      count.textContent = dadosInscricoes.length;
+
+      if (dadosInscricoes.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="11" class="empty-state"><i class="fas fa-inbox"></i><br>Nenhuma inscrição encontrada</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = dadosInscricoes.map(inscricao => `
+        <tr>
+          <td>${inscricao.id}</td>
+          <td>${inscricao.servidor}</td>
+          <td>${inscricao.nome}</td>
+          <td>${inscricao.telefone}</td>
+          <td>${inscricao.tipo_quarto}</td>
+          <td>${formatarMoeda(inscricao.valor_quarto)}</td>
+          <td>${formatarMoeda(inscricao.valor_entrada)}</td>
+          <td>${formatarMoeda(inscricao.valor_restante)}</td>
+      
+          <td>
+            <div><span class="badge badge-${inscricao.tipo_pagamento}">${inscricao.tipo_pagamento.replace('_', ' ').toUpperCase()}</span></div>
+            <small class="text-muted" style="font-size: 0.75em;">${formatarData(inscricao.data_criacao)}</small>
+          </td>
+
+        
+          <td>
+            ${inscricao.data_vencimento ? formatarData(inscricao.data_vencimento) : '-'}
+          </td>
+    <td>
+                <a href="/admin/inscricoes/${inscricao.id}/edit" class="btn btn-action btn-edit" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <button class="btn btn-action btn-delete" onclick="confirmarExclusao('inscricao', ${inscricao.id}, '${inscricao.nome}')" title="Excluir">
+                  <i class="fas fa-trash"></i>
+                </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+
+
+    
+    function limparFiltrosInscricoes() {
+      document.getElementById('filtrosInscricoes').reset();
+      carregarInscricoes();
+    }
+
+      function excluirInscricao(id) {
+  // A URL correta deve apontar para a rota de exclusão que espera um POST
+  fetch(`/admin/inscricao/${id}/delete`, {
+    method: 'POST' // O método deve ser POST, como definido na sua rota Flask
+  })
+  .then(response => {
+    if (response.ok) {
+      showAlert('Inscrição excluída com sucesso!', 'success');
+      carregarInscricoes(); // Recarrega os dados da tabela de inscrições
+    } else {
+      response.json().then(data => {
+        showAlert(`Erro ao excluir inscrição: ${data.error || response.statusText}`, 'danger');
+      });
+    }
+  })
+  .catch(error => {
+    console.error('Erro ao excluir inscrição:', error);
+    showAlert('Erro de comunicação ao excluir inscrição.', 'danger');
+  });
+}
+
+    // ==================== SERVIDORES ====================
+
+    function carregarServidores() {
+      const tbody = document.getElementById('tabelaServidores');
+      tbody.innerHTML = '<tr><td colspan="6" class="loading-state"><i class="fas fa-spinner fa-spin"></i> Carregando dados...</td></tr>';
+      
+      const form = document.getElementById('filtrosServidores');
+      const params = new URLSearchParams(new FormData(form)).toString();
+
+      fetch(`/admin/api/servidores?${params}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Erro na API: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Adicionar debug para verificar os dados recebidos
+          console.log('Dados recebidos da API servidores:', data);
+          
+          if (!Array.isArray(data)) {
+            console.error('Erro retornado pela API:', data.error || 'Formato de dados inesperado');
+            tbody.innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fas fa-exclamation-triangle"></i><br>Erro ao carregar dados: ${data.error || 'Resposta inválida do servidor'}.</td></tr>`;
+            return;
+          }
+
+          dadosServidores = data;
+          renderizarTabelaServidores();
+        })
+        .catch(error => {
+          console.error('Erro ao carregar servidores:', error);
+          tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar dados.</td></tr>';
+        });
+    }
+
+    function renderizarTabelaServidores() {
+      const tbody = document.getElementById('tabelaServidores');
+      const count = document.getElementById('countServidores');
+      
+      count.textContent = dadosServidores.length;
+
+      if (dadosServidores.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-inbox"></i><br>Nenhum servidor encontrado</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = dadosServidores.map(servidor => {
+        const statusBadgeClass = servidor.ativo ? 'bg-success' : 'bg-danger';
+        const statusText = servidor.ativo ? 'Ativo' : 'Inativo';
+        return `
+          <tr>
+            <td>${servidor.id}</td>
+            <td>${servidor.nome}</td>
+            <td><span class="badge ${statusBadgeClass}">${statusText}</span></td>
+            <td>${servidor.total_materiais !== undefined ? servidor.total_materiais : 'N/A'}</td>
+            <td>${servidor.total_inscricoes !== undefined ? servidor.total_inscricoes : 'N/A'}</td>
+            <td>
+              <button class="btn btn-action btn-edit" onclick="editarServidor(${servidor.id})" title="Editar">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-action btn-delete" onclick="confirmarExclusao('servidor', ${servidor.id}, '${servidor.nome}')" title="Excluir">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function limparFiltrosServidores() {
+      document.getElementById('filtrosServidores').reset();
+      carregarServidores();
+    }
+
+    function abrirModalServidor(servidor = {}) {
+      const modal = new bootstrap.Modal(document.getElementById('modalServidor'));
+      document.getElementById('servidorId').value = servidor.id || '';
+      document.getElementById('servidorNome').value = servidor.nome || '';
+      
+      const servidorStatusDiv = document.getElementById('servidorStatusDiv');
+      if (servidor.id) { // Se for edição, mostra o status
+        servidorStatusDiv.style.display = 'block';
+        document.getElementById('servidorAtivo').value = servidor.ativo ? 'true' : 'false';
+      } else { // Se for adição, esconde o status
+        servidorStatusDiv.style.display = 'none';
+      }
+      
+      modal.show();
+    }
+
+    function salvarServidor() {
+      const servidorId = document.getElementById('servidorId').value;
+      const servidorNome = document.getElementById('servidorNome').value;
+      const servidorAtivo = document.getElementById('servidorAtivo').value === 'true';
+
+      const method = servidorId ? 'PUT' : 'POST';
+      const url = servidorId ? `/admin/api/servidores/${servidorId}` : '/admin/api/servidores';
+
+      fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ nome: servidorNome, ativo: servidorAtivo })
+      })
+      .then(response => {
+        if (response.ok) {
+          showAlert(`Servidor ${servidorId ? 'atualizado' : 'adicionado'} com sucesso!`, 'success');
+          carregarServidores();
+          bootstrap.Modal.getInstance(document.getElementById('modalServidor')).hide();
+        } else {
+          response.json().then(data => {
+            showAlert(`Erro ao salvar servidor: ${data.error || response.statusText}`, 'danger');
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Erro ao salvar servidor:', error);
+        showAlert('Erro de comunicação ao salvar servidor.', 'danger');
+      });
+    }
+
+    function editarServidor(id) {
+      const servidor = dadosServidores.find(s => s.id === id);
+      if (servidor) {
+        abrirModalServidor(servidor);
+      } else {
+        showAlert('Servidor não encontrado para edição.', 'danger');
+      }
+    }
+
+    function excluirServidor(id) {
+      fetch(`/admin/api/servidores/${id}`, {
+        method: 'DELETE'
+      })
+      .then(response => {
+        if (response.ok) {
+          showAlert('Servidor excluído com sucesso!', 'success');
+          carregarServidores();
+        } else {
+          response.json().then(data => {
+            showAlert(`Erro ao excluir servidor: ${data.error || response.statusText}`, 'danger');
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Erro ao excluir servidor:', error);
+        showAlert('Erro de comunicação ao excluir servidor.', 'danger');
+      });
+    }
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Material - Encompasso Barreiro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Fonte opcional -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f8f9fa;
+      min-height: 100vh;
+    }
+
+    .navbar {
+      background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 1rem 0;
+    }
+
+    .navbar-brand {
+      font-weight: 600;
+      font-size: 1.3rem;
+      color: white !important;
+    }
+
+    .navbar-nav .nav-link {
+      color: rgba(255, 255, 255, 0.9) !important;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      margin: 0 0.2rem;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: white !important;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .main-container {
+      padding: 2rem 0;
+    }
+
+    .edit-card {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e9ecef;
+    }
+
+    .edit-header {
+      border-bottom: 1px solid #e9ecef;
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .edit-header h1 {
+      color: #1a1a1a;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .edit-header p {
+      color: #6c757d;
+      margin-bottom: 0;
+    }
+
+    .form-label {
+      font-weight: 500;
+      color: #495057;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control, .form-select {
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.1);
+    }
+
+    .btn-save {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      border: none;
+      color: white;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-save:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+      color: white;
+    }
+
+    .btn-cancel {
+      background: #6c757d;
+      border: none;
+      color: white;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .btn-cancel:hover {
+      background: #5a6268;
+      color: white;
+      text-decoration: none;
+    }
+
+    .alert {
+      border-radius: 8px;
+      border: none;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-section {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid #e9ecef;
+    }
+
+    .form-section h5 {
+      color: #495057;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        padding: 1rem 0;
+      }
+
+      .edit-card {
+        padding: 1.5rem;
+        margin: 0 1rem;
+      }
+
+      .edit-header {
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <i class="fas fa-edit me-2"></i>
+        Editar Material
+      </a>
+      
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+          <i class="fas fa-arrow-left me-1"></i>Voltar ao Dashboard
+        </a>
+        <a class="nav-link" href="{{ url_for('admin_logout') }}">
+          <i class="fas fa-sign-out-alt me-1"></i>Sair
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container main-container">
+    <div class="edit-card">
+      <div class="edit-header">
+        <h1><i class="fas fa-box me-2"></i>Editar Material #{{ material.id }}</h1>
+        <p>Modifique os dados do material conforme necessário</p>
+      </div>
+
+      <!-- Mensagens de Flash -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+              <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST">
+        <!-- Informações Básicas -->
+        <div class="form-section">
+          <h5><i class="fas fa-user"></i>Informações Básicas</h5>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="servidor" class="form-label">Servidor</label>
+              <select class="form-select" id="servidor" name="servidor" required>
+                {% for servidor_option in servidores %}
+                  <option value="{{ servidor_option }}" {{ 'selected' if material.servidor == servidor_option else '' }}>
+                    {{ servidor_option }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="nome" class="form-label">Nome do Cliente</label>
+              <input type="text" class="form-control" id="nome" name="nome" value="{{ material.nome or '' }}" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="telefone" class="form-label">Telefone</label>
+              <input type="text" class="form-control" id="telefone" name="telefone" value="{{ material.telefone or '' }}" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detalhes dos Materiais -->
+        <div class="form-section">
+          <h5><i class="fas fa-box"></i>Detalhes dos Materiais</h5>
+          <div class="row">
+            <div class="col-md-8 mb-3">
+              <label for="detalhes_materiais" class="form-label">Materiais Solicitados</label>
+              <textarea class="form-control" id="detalhes_materiais" name="detalhes_materiais" rows="3" required>{{ material.detalhes_materiais or '' }}</textarea>
+              <div class="form-text">Descreva os materiais e quantidades (ex: Chaveiro: 5; Adesivo: 10)</div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="total_itens_pedido" class="form-label">Total de Itens</label>
+              <input type="number" class="form-control" id="total_itens_pedido" name="total_itens_pedido" 
+                     value="{{ material.total_itens_pedido or 0 }}" min="0" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Informações de Pagamento -->
+        <div class="form-section">
+          <h5><i class="fas fa-credit-card"></i>Informações de Pagamento</h5>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="total" class="form-label">Valor Total (R$)</label>
+              <input type="number" class="form-control" id="total" name="total" step="0.01" min="0" 
+                     value="{{ material.total or 0 }}" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="tipo_pagamento" class="form-label">Tipo de Pagamento</label>
+              <select class="form-select" id="tipo_pagamento" name="tipo_pagamento" required>
+                <option value="pix" {{ 'selected' if material.tipo_pagamento == 'pix' else '' }}>PIX</option>
+                <option value="dinheiro" {{ 'selected' if material.tipo_pagamento == 'dinheiro' else '' }}>Dinheiro</option>
+                <option value="fiado" {{ 'selected' if material.tipo_pagamento == 'fiado' else '' }}>Fiado</option>
+              </select>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="data_vencimento" class="form-label">Data de Vencimento</label>
+              <input type="date" class="form-control" id="data_vencimento" name="data_vencimento" 
+                     value="{{ material.data_vencimento.strftime('%Y-%m-%d') if material.data_vencimento else '' }}">
+              <div class="form-text">Apenas para pagamentos fiados</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="d-flex gap-3 justify-content-end">
+          <a href="{{ url_for('admin_dashboard') }}" class="btn btn-cancel">
+            <i class="fas fa-times me-2"></i>Cancelar
+          </a>
+          <button type="submit" class="btn btn-save">
+            <i class="fas fa-save me-2"></i>Salvar Alterações
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // Mostrar/ocultar campo de vencimento baseado no tipo de pagamento
+    document.getElementById('tipo_pagamento').addEventListener('change', function() {
+      const dataVencimento = document.getElementById('data_vencimento');
+      const dataVencimentoContainer = dataVencimento.closest('.col-md-4');
+      
+      if (this.value === 'fiado') {
+        dataVencimentoContainer.style.display = 'block';
+        dataVencimento.required = true;
+      } else {
+        dataVencimentoContainer.style.display = 'none';
+        dataVencimento.required = false;
+        dataVencimento.value = '';
+      }
+    });
+
+    // Executar a lógica inicial
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('tipo_pagamento').dispatchEvent(new Event('change'));
+
+      // Adicionar listener para o formulário
+      const form = document.getElementById('editMaterialForm');
+      form.addEventListener('submit', async function(event) {
+        event.preventDefault(); // Previne o envio padrão do formulário
+
+        const materialId = {{ material.id }};
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        // Se data_vencimento estiver vazio, enviar null
+        if (data.data_vencimento === '') {
+          data.data_vencimento = null;
+        }
+
+        // Converter total para float
+        if (data.total) {
+          data.total = parseFloat(data.total);
+        }
+        // Converter total_itens_pedido para int
+        if (data.total_itens_pedido) {
+          data.total_itens_pedido = parseInt(data.total_itens_pedido);
+        }
+
+        try {
+          const response = await fetch(`/admin/api/materiais/${materialId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            alert(result.message || 'Material atualizado com sucesso!');
+            window.location.href = '{{ url_for('admin_dashboard') }}'; // Redireciona para o dashboard
+          } else {
+            alert(result.error || 'Erro ao atualizar material.');
+          }
+        } catch (error) {
+          console.error('Erro:', error);
+          alert('Ocorreu um erro ao tentar atualizar o material.');
+        }
+      });
+    });
+
+    // Formatação de telefone
+    document.getElementById('telefone').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length <= 11) {
+        value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+        if (value.length < 14) {
+          value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+        }
+      }
+      e.target.value = value;
+    });
+
+    // Formatação de valor
+    document.getElementById('total').addEventListener('input', function(e) {
+      let value = parseFloat(e.target.value);
+      if (isNaN(value) || value < 0) {
+        e.target.value = 0;
+      }
+    });
+  </script>
+</body>
+</html>
+
+
