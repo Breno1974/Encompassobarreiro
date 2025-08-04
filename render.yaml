@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: encompassobarreiro # Pode ser o nome do seu serviço no Render
+    env: python
+    plan: free # Ou o plano que você estiver usando
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
+    startCommand: "gunicorn seu_app:app" # IMPORTANTE: Substitua pelo seu comando de start
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.9 # Use a versão do Python que você usa localmente, se souber
