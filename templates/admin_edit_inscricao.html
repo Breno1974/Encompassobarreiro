@@ -293,6 +293,18 @@
           </div>
         </div>
 
+        <!-- Informações Adicionais (Observação) -->
+        <div class="form-section">
+          <h5><i class="fas fa-info-circle"></i>Informações Adicionais</h5>
+          <div class="row">
+            <div class="col-12 mb-3">
+              <label for="observacao" class="form-label">Observação</label>
+              <textarea class="form-control" id="observacao" name="observacao" rows="4" placeholder="Alguma necessidade especial, restrição alimentar, etc.">{{ inscricao.observacao or '' }}</textarea>
+              <div class="form-text">Este campo é opcional.</div>
+            </div>
+          </div>
+        </div>
+
         <!-- Botões de Ação -->
         <div class="d-flex gap-3 justify-content-end">
           <a href="{{ url_for('admin_dashboard') }}" class="btn btn-cancel">

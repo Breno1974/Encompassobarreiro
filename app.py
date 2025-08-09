@@ -356,7 +356,7 @@ def admin_api_inscricoes():
     
     query = """
         SELECT id, servidor, nome, telefone, tipo_pagamento, data_vencimento, 
-               tipo_quarto, valor_quarto, valor_entrada, valor_restante, data_criacao
+               tipo_quarto, valor_quarto, valor_entrada, valor_restante, data_criacao, observacao
         FROM inscricoes 
         WHERE 1=1
     """
@@ -803,7 +803,8 @@ def admin_edit_inscricao(inscricao_id):
         # Use .get() com um valor padrão para evitar o KeyError
         valor_quarto = float(request.form.get('valor_quarto', '0'))
         valor_entrada = float(request.form.get('valor_entrada', '0'))
-        
+        observacao = request.form.get('observacao', None)
+
         # Lógica de segurança: se o pagamento não for 'fiado', zere a entrada e a data
         if tipo_pagamento != 'fiado':
             valor_entrada = 0
@@ -816,10 +817,10 @@ def admin_edit_inscricao(inscricao_id):
             UPDATE inscricoes 
             SET servidor = %s, nome = %s, telefone = %s, tipo_pagamento = %s,
                 data_vencimento = %s, tipo_quarto = %s, valor_quarto = %s,
-                valor_entrada = %s, valor_restante = %s
+                valor_entrada = %s, valor_restante = %s, observacao = %s
             WHERE id = %s
         """, (servidor, nome, telefone, tipo_pagamento, data_vencimento,
-              tipo_quarto, valor_quarto, valor_entrada, valor_restante, inscricao_id))
+              tipo_quarto, valor_quarto, valor_entrada, valor_restante, observacao ,inscricao_id))
         
         # --- FIM DA CORREÇÃO ---
         
@@ -964,6 +965,7 @@ def salvar_inscricao():
         tipo_quarto = request.form['tipo_quarto']
         valor_entrada_str = request.form.get('valor_entrada', '')
         enviar_whatsapp_flag = request.form.get('enviar_whatsapp')
+        observacao = request.form.get('observacao', None)
         
         # Definir valores dos quartos
         valores_quartos = {
@@ -989,9 +991,9 @@ def salvar_inscricao():
         # Inserir na tabela inscricoes
         cursor.execute("""
             INSERT INTO inscricoes 
-            (servidor, nome, telefone, tipo_pagamento, data_vencimento, tipo_quarto, valor_quarto, valor_entrada, valor_restante)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (servidor, nome, telefone, tipo_pagamento, data_vencimento, tipo_quarto, valor_quarto, valor_entrada, valor_restante))
+            (servidor, nome, telefone, tipo_pagamento, data_vencimento, tipo_quarto, valor_quarto, valor_entrada, valor_restante,observacao)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (servidor, nome, telefone, tipo_pagamento, data_vencimento, tipo_quarto, valor_quarto, valor_entrada, valor_restante,observacao))
         
         conn.commit()
         conn.close()
@@ -1011,7 +1013,8 @@ def salvar_inscricao():
                 'valor_entrada': valor_entrada_formatado,
                 'valor_restante': valor_restante_formatado,
                 'tipo_pagamento': tipo_pagamento,
-                'data_vencimento': data_vencimento
+                'data_vencimento': data_vencimento,
+                'observacao': observacao
             }
             
             url_whatsapp = enviar_whatsapp_inscricoes(telefone, dados_registro)
@@ -1268,7 +1271,14 @@ def exportar_inscricoes():
      
      try:
          conn = psycopg2.connect(DATABASE_URL)
-         sql_query = "SELECT * FROM inscricoes ORDER BY id DESC;"
+         sql_query = """
+            SELECT 
+                id, servidor, nome, telefone, tipo_quarto, 
+                valor_quarto, valor_entrada, valor_restante, 
+                tipo_pagamento, data_vencimento, observacao, data_criacao 
+            FROM inscricoes 
+            ORDER BY id DESC;
+        """
          df = pd.read_sql_query(sql_query, conn)
          conn.close()
 

@@ -430,6 +430,19 @@
           <span class="quarto-preco">R$ 299,90</span>
         </div>
 
+        <!-- Seção de Observação -->
+        <div class="form-group mt-3">
+          <a href="#" id="toggleObservacao" class="text-primary" style="text-decoration: none; font-size: 0.9rem;">
+            <i class="fas fa-plus-circle me-1"></i>Adicionar observação?
+          </a>
+          <div id="observacao_group" style="display: none;">
+            <label for="observacao" class="form-label">Observação</label>
+            <textarea class="form-control" id="observacao" name="observacao" rows="3" placeholder="Alguma necessidade especial, restrição alimentar, etc."></textarea>
+          </div>
+        </div>
+
+        <!-- Fim da Seção de Observação -->
+
         <div class="qr-section">
           <div class="qr-code">
             <img src="{{ url_for('static', filename='inscricao_qrcode.png') }}" alt="QR Code PIX" style="width: 100px; height: 100px;">
@@ -653,6 +666,17 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
+
+    // Script para mostrar/esconder o campo de observação
+    document.getElementById('toggleObservacao').addEventListener('click', function(e) {
+      e.preventDefault(); // Impede que o link recarregue a página
+      document.getElementById('observacao_group').style.display = 'block'; // Mostra o campo de texto
+      this.style.display = 'none'; // Esconde o link "Adicionar observação?"
+    });
+
+
+
+
 
   </script>
 </body>

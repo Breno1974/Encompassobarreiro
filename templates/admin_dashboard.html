@@ -421,46 +421,51 @@
     <div class="tab-content" id="adminTabsContent">
       <!-- Materiais Tab -->
       <div class="tab-pane fade show active" id="materiais" role="tabpanel" aria-labelledby="materiais-tab">
-        <!-- Filtros Materiais -->
         <div class="filters-card">
-          <h5 class="filters-title">
-            <i class="fas fa-filter"></i>Filtros - Materiais
-          </h5>
-          <form id="filtrosMateriais">
-            <div class="row">
-              <div class="col-md-3 mb-3">
-                <label class="form-label">Servidor</label>
-                <input type="text" class="form-control" name="servidor" placeholder="Nome do servidor">
-              </div>
-              <div class="col-md-3 mb-3">
-                <label class="form-label">Nome</label>
-                <input type="text" class="form-control" name="nome" placeholder="Nome do cliente">
-              </div>
-              <div class="col-md-3 mb-3">
-                <label class="form-label">Telefone</label>
-                <input type="text" class="form-control" name="telefone" placeholder="Telefone">
-              </div>
-              <div class="col-md-3 mb-3">
-                <label class="form-label">Tipo Pagamento</label>
-                <select class="form-select" name="tipo_pagamento">
-                  <option value="">Todos</option>
-                  <option value="pix">PIX</option>
-                  <option value="dinheiro">Dinheiro</option>
-                  <option value="fiado">Fiado</option>
-                </select>
-              </div>
-            </div>
-            <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-filter">
-                <i class="fas fa-search me-2"></i>Filtrar
-              </button>
-              <button type="button" class="btn btn-clear" onclick="limparFiltrosMateriais()">
-                <i class="fas fa-times me-2"></i>Limpar
-              </button>
-            </div>
-          </form>
-        </div>
+  <!-- TÍTULO CLICÁVEL PARA MOSTRAR/OCULTAR -->
+  <h5 class="filters-title" data-bs-toggle="collapse" data-bs-target="#collapseMateriais" aria-expanded="false" aria-controls="collapseMateriais" style="cursor: pointer;">
+    <i class="fas fa-filter"></i>
+    Filtros - Materiais
+    <i class="fas fa-chevron-down ms-auto"></i> <!-- Ícone indicador -->
+  </h5>
 
+  <!-- CONTEÚDO COLAPSÁVEL COM O FORMULÁRIO -->
+  <div class="collapse" id="collapseMateriais">
+    <form id="filtrosMateriais" class="mt-3"> <!-- Adicionado margin-top -->
+      <div class="row">
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Servidor</label>
+          <input type="text" class="form-control" name="servidor" placeholder="Nome do servidor">
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Nome</label>
+          <input type="text" class="form-control" name="nome" placeholder="Nome do cliente">
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Telefone</label>
+          <input type="text" class="form-control" name="telefone" placeholder="Telefone">
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Tipo Pagamento</label>
+          <select class="form-select" name="tipo_pagamento">
+            <option value="">Todos</option>
+            <option value="pix">PIX</option>
+            <option value="dinheiro">Dinheiro</option>
+            <option value="fiado">Fiado</option>
+          </select>
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-filter">
+          <i class="fas fa-search me-2"></i>Filtrar
+        </button>
+        <button type="button" class="btn btn-clear" onclick="limparFiltrosMateriais()">
+          <i class="fas fa-times me-2"></i>Limpar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
         <!-- Tabela Materiais -->
         <div class="data-card">
           <div class="data-card-header">
@@ -498,46 +503,56 @@
       </div>
 
       <!-- Inscrições Tab -->
-      <div class="tab-pane fade" id="inscricoes" role="tabpanel" aria-labelledby="inscricoes-tab">
-        <!-- Filtros Inscrições -->
-        <div class="filters-card">
-          <h5 class="filters-title">
-            <i class="fas fa-filter"></i>Filtros - Inscrições
-          </h5>
-          <form id="filtrosInscricoes">
-            <div class="row">
-              <div class="col-md-3 mb-3">
-                <label class="form-label">Servidor</label>
-                <input type="text" class="form-control" name="servidor" placeholder="Nome do servidor">
-              </div>
-              <div class="col-md-3 mb-3">
-                <label class="form-label">Nome</label>
-                <input type="text" class="form-control" name="nome" placeholder="Nome do cliente">
-              </div>
-              <div class="col-md-3 mb-3">
-                <label class="form-label">Telefone</label>
-                <input type="text" class="form-control" name="telefone" placeholder="Telefone">
-              </div>
-              <div class="col-md-3 mb-3">
-                <label class="form-label">Tipo Pagamento</label>
-                <select class="form-select" name="tipo_pagamento">
-                  <option value="">Todos</option>
-                  <option value="pix">PIX</option>
-                  <option value="dinheiro">Dinheiro</option>
-                  <option value="fiado">Fiado</option>
-                </select>
-              </div>
-            </div>
-            <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-filter">
-                <i class="fas fa-search me-2"></i>Filtrar
-              </button>
-              <button type="button" class="btn btn-clear" onclick="limparFiltrosInscricoes()">
-                <i class="fas fa-times me-2"></i>Limpar
-              </button>
-            </div>
-          </form>
+<div class="tab-pane fade" id="inscricoes" role="tabpanel" aria-labelledby="inscricoes-tab">
+
+<!-- Filtros Inscrições (versão simplificada) -->
+<div class="filters-card">
+  <!-- TÍTULO CLICÁVEL PARA MOSTRAR/OCULTAR -->
+  <h5 class="filters-title" data-bs-toggle="collapse" data-bs-target="#collapseInscricoes" aria-expanded="false" aria-controls="collapseInscricoes" style="cursor: pointer;">
+    <i class="fas fa-filter"></i>
+    Filtros - Inscrições
+    <i class="fas fa-chevron-down ms-auto"></i> <!-- Ícone opcional para indicar ação -->
+  </h5>
+
+  <!-- CONTEÚDO COLAPSÁVEL COM O FORMULÁRIO -->
+  <div class="collapse" id="collapseInscricoes">
+    <form id="filtrosInscricoes" class="mt-3"> <!-- Adicionado um margin-top para espaçamento -->
+      <div class="row">
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Servidor</label>
+          <input type="text" class="form-control" name="servidor" placeholder="Nome do servidor">
         </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Nome</label>
+          <input type="text" class="form-control" name="nome" placeholder="Nome do cliente">
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Telefone</label>
+          <input type="text" class="form-control" name="telefone" placeholder="Telefone">
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Tipo Pagamento</label>
+          <select class="form-select" name="tipo_pagamento">
+            <option value="">Todos</option>
+            <option value="pix">PIX</option>
+            <option value="dinheiro">Dinheiro</option>
+            <option value="fiado">Fiado</option>
+          </select>
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-filter">
+          <i class="fas fa-search me-2"></i>Filtrar
+        </button>
+        <button type="button" class="btn btn-clear" onclick="limparFiltrosInscricoes()">
+          <i class="fas fa-times me-2"></i>Limpar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
 
         <!-- Tabela Inscrições -->
         <div class="data-card">
@@ -565,6 +580,7 @@
                   <th>Pagamento</th>
                   <th>Vencimento</th>
                   <th>Ações</th>
+                  
                 </tr>
               </thead>
               <tbody id="tabelaInscricoes">
@@ -946,52 +962,59 @@ function carregarInscricoes() {
       tbody.innerHTML = '<tr><td colspan="11" class="empty-state"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar dados.</td></tr>';
     });
 }
-     function renderizarTabelaInscricoes() {
-      const tbody = document.getElementById('tabelaInscricoes');
-      const count = document.getElementById('countInscricoes');
-      
-      count.textContent = dadosInscricoes.length;
 
-      if (dadosInscricoes.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="11" class="empty-state"><i class="fas fa-inbox"></i><br>Nenhuma inscrição encontrada</td></tr>';
+
+function renderizarTabelaInscricoes() {
+    const tbody = document.getElementById('tabelaInscricoes');
+    const count = document.getElementById('countInscricoes');
+    
+    count.textContent = dadosInscricoes.length;
+
+    if (dadosInscricoes.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="11" class="empty-state"><i class="fas fa-inbox"></i>  
+Nenhuma inscrição encontrada</td></tr>`;
         return;
-      }
-
-      tbody.innerHTML = dadosInscricoes.map(inscricao => `
-        <tr>
-          <td>${inscricao.id}</td>
-          <td>${inscricao.servidor}</td>
-          <td>${inscricao.nome}</td>
-          <td>${inscricao.telefone}</td>
-          <td>${inscricao.tipo_quarto}</td>
-          <td>${formatarMoeda(inscricao.valor_quarto)}</td>
-          <td>${formatarMoeda(inscricao.valor_entrada)}</td>
-          <td>${formatarMoeda(inscricao.valor_restante)}</td>
-      
-          <td>
-            <div><span class="badge badge-${inscricao.tipo_pagamento}">${inscricao.tipo_pagamento.replace('_', ' ').toUpperCase()}</span></div>
-            <small class="text-muted" style="font-size: 0.75em;">${formatarData(inscricao.data_criacao)}</small>
-          </td>
-
-        
-          <td>
-            ${inscricao.data_vencimento ? formatarData(inscricao.data_vencimento) : '-'}
-          </td>
-    <td>
-                <a href="/admin/inscricoes/${inscricao.id}/edit" class="btn btn-action btn-edit" title="Editar">
-                  <i class="fas fa-edit"></i>
-                </a>
-                <button class="btn btn-action btn-delete" onclick="confirmarExclusao('inscricao', ${inscricao.id}, '${inscricao.nome}')" title="Excluir">
-                  <i class="fas fa-trash"></i>
-                </button>
-          </td>
-        </tr>
-      `).join('');
     }
 
+    tbody.innerHTML = dadosInscricoes.map(inscricao => {
+        // --- A NOVA MÁGICA EM POUCAS LINHAS ---
+        // 1. Cria um ícone de nota SUTIL e DISCRETO, apenas se houver observação.
+        const iconeObservacao = (inscricao.observacao && inscricao.observacao.trim() !== '')
+            ? `<i class="fas fa-comment-alt text-muted ms-2" title="${inscricao.observacao.replace(/"/g, '&quot;')}"></i>`
+            : ''; // Se não houver, a variável fica vazia.
 
+        // 2. Retorna o HTML da linha, adicionando o ícone discreto ao lado do nome.
+        return `
+            <tr>
+                <td>${inscricao.id}</td>
+                <td>${inscricao.servidor}</td>
+                <td>${inscricao.nome}${iconeObservacao}</td>
+                <td>${inscricao.telefone}</td>
+                <td>${inscricao.tipo_quarto}</td>
+                <td>${formatarMoeda(inscricao.valor_quarto)}</td>
+                <td>${formatarMoeda(inscricao.valor_entrada)}</td>
+                <td>${formatarMoeda(inscricao.valor_restante)}</td>
+                <td>
+                    <div><span class="badge badge-${inscricao.tipo_pagamento}">${inscricao.tipo_pagamento.replace('_', ' ').toUpperCase()}</span></div>
+                    <small class="text-muted" style="font-size: 0.75em;">${formatarData(inscricao.data_criacao)}</small>
+                </td>
+                <td>
+                    ${inscricao.data_vencimento ? formatarData(inscricao.data_vencimento) : '-'}
+                </td>
+                <td>
+                    <a href="/admin/inscricoes/${inscricao.id}/edit" class="btn btn-action btn-edit" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <button class="btn btn-action btn-delete" onclick="confirmarExclusao('inscricao', ${inscricao.id}, '${inscricao.nome}')" title="Excluir">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
 
-    
+  
     function limparFiltrosInscricoes() {
       document.getElementById('filtrosInscricoes').reset();
       carregarInscricoes();
