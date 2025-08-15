@@ -409,14 +409,22 @@
           <i class="fas fa-user-plus me-2"></i>Inscrições
         </button>
       </li>
+
+   
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="servidores-tab" data-bs-toggle="tab" data-bs-target="#servidores" 
                 type="button" role="tab" aria-controls="servidores" aria-selected="false">
           <i class="fas fa-users-cog me-2"></i>Servidores
         </button>
       </li>
-    </ul>
-
+  
+          <li class="nav-item" role="presentation">
+        <button class="nav-link" id="convites-tab" data-bs-toggle="tab" data-bs-target="#convites" 
+                type="button" role="tab" aria-controls="convites" aria-selected="false">
+          <i class="fas fa-paper-plane me-2"></i>Convites
+        </button>
+      </li>
+  </ul>
     <!-- Tab Content -->
     <div class="tab-content" id="adminTabsContent">
       <!-- Materiais Tab -->
@@ -507,6 +515,7 @@
 
 <!-- Filtros Inscrições (versão simplificada) -->
 <div class="filters-card">
+ 
   <!-- TÍTULO CLICÁVEL PARA MOSTRAR/OCULTAR -->
   <h5 class="filters-title" data-bs-toggle="collapse" data-bs-target="#collapseInscricoes" aria-expanded="false" aria-controls="collapseInscricoes" style="cursor: pointer;">
     <i class="fas fa-filter"></i>
@@ -595,6 +604,55 @@
           </div>
         </div>
       </div>
+
+      <!-- ================================================== -->
+      <!-- ========= INÍCIO DA ABA DE CONVITES (NOVA) ========= -->
+      <!-- ================================================== -->
+      <div class="tab-pane fade" id="convites" role="tabpanel" aria-labelledby="convites-tab">
+        <!-- Card de Dados para Convites -->
+        <div class="data-card">
+          <!-- Cabeçalho do Card -->
+          <div class="data-card-header d-flex justify-content-between align-items-center">
+            <h5 class="data-card-title">
+              <i class="fas fa-paper-plane"></i>
+              Lista de Convites
+              <span class="badge bg-primary ms-2" id="countConvites">0</span>
+            </h5>
+            <!-- Botão para abrir o modal de novo convite -->
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalConvite">
+              <i class="fas fa-plus me-2"></i>Criar Novo Convite
+            </button>
+          </div>
+          
+          <!-- Tabela Responsiva -->
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Título</th>
+                  <th>Descrição</th>
+                  <th>Criado em</th>
+                  <th>Respostas</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaConvites">
+                <!-- O JavaScript irá preencher esta área -->
+                <tr>
+                  <td colspan="6" class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Carregando dados...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- ================================================== -->
+      <!-- =========== FIM DA ABA DE CONVITES (NOVA) ========== -->
+      <!-- ================================================== -->
 
       <!-- Servidores Tab -->
       <div class="tab-pane fade" id="servidores" role="tabpanel" aria-labelledby="servidores-tab">
@@ -719,12 +777,105 @@
     </div>
   </div>
 
+ <div class="modal fade" id="modalConvite" tabindex="-1" aria-labelledby="modalConviteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalConviteLabel">Criar Novo Convite</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formConvite">
+            <input type="hidden" id="conviteId">
+            <div class="mb-3">
+              <label for="conviteTitulo" class="form-label">Título do Convite</label>
+              <input type="text" class="form-control" id="conviteTitulo" placeholder="Ex: Convite II Encompasso Barreiro" required>
+            </div>
+            <div class="mb-3">
+              <label for="conviteDescricao" class="form-label">Descrição (Mensagem)</label>
+              <textarea class="form-control" id="conviteDescricao" rows="4" placeholder="Esta mensagem aparecerá na página de resposta do associado."></textarea>
+            </div>
+             <div class="mb-3">
+              <label for="conviteMensagemWhatsapp" class="form-label">Mensagem para WhatsApp</label>
+              <textarea class="form-control" id="conviteMensagemWhatsapp" rows="4" placeholder="Olá, {nome}! Você está convidado... Use {link} para o link único."></textarea>
+              <div class="form-text">
+                Use <strong>{nome}</strong> para o nome do associado e <strong>{link}</strong> para o link único.
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" onclick="salvarConvite()">Salvar Convite</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  
+<!-- ================================================== -->
+<!--  INÍCIO: MODAL GERENCIAR ENVIOS (VERSÃO ATUALIZADA)  -->
+<!-- ================================================== -->
+<div class="modal fade" id="modalGerenciarEnvios" tabindex="-1" aria-labelledby="modalGerenciarEnviosLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalGerenciarEnviosLabel">Gerenciar Envios e Respostas</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Botões de Ação -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <button class="btn btn-primary" id="btnPrepararEnvios">
+                    <i class="fas fa-cogs me-2"></i>Preparar Envios
+                </button>
+                <!-- BOTÃO DE EXPORTAR ADICIONADO -->
+                <a href="#" id="btnExportarExcel" class="btn btn-success" style="display: none;">
+                    <i class="fas fa-file-excel me-2"></i>Exportar para Excel
+                </a>
+            </div>
+            <span id="totalRespostas" class="fw-bold"></span>
+        </div>
+        <!-- Tabela de Respostas -->
+        <div class="table-responsive" style="max-height: 60vh;">
+          <table class="table table-striped table-hover">
+            <thead class="table-light" style="position: sticky; top: 0;">
+              <tr>
+                <!-- COLUNAS ATUALIZADAS -->
+                <th>Associado</th>
+                <th>Telefone</th>
+                <th>CSA</th>
+                <th>Status da Resposta</th>
+                <th>Link Único</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaRespostasConvite">
+              <!-- Conteúdo dinâmico aqui -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ================================================== -->
+<!--     FIM: MODAL GERENCIAR ENVIOS (VERSÃO ATUALIZADA)    -->
+<!-- ================================================== -->
+
+
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     let dadosMateriais = [];
     let dadosInscricoes = [];
     let dadosServidores = [];
+    let dadosConvites = [];
 
     document.addEventListener('DOMContentLoaded', function() {
     // --- ETAPA 1: Lógica de Ativação e Carregamento Inicial ---
@@ -763,6 +914,10 @@
         carregarServidores();
     });
 
+    document.getElementById('convites-tab').addEventListener('shown.bs.tab', function (event) {
+        carregarConvites();
+    });
+
     // --- ETAPA 3: Listeners para os filtros ---
     // (Este código também permanece o mesmo)
     document.getElementById('filtrosMateriais').addEventListener('submit', function(e) {
@@ -778,6 +933,7 @@
         carregarServidores();
     });
 });
+
     // ==================== FUNÇÕES GERAIS ====================
 
     function formatarData(dataString) {
@@ -812,24 +968,51 @@
       return parseFloat(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
-    function confirmarExclusao(tipo, id, nome) {
-      document.getElementById('itemExcluirTipo').textContent = tipo;
-      document.getElementById('itemExcluirNome').textContent = nome;
-      const btnConfirmar = document.getElementById('btnConfirmarExclusao');
-      btnConfirmar.onclick = function() {
+
+function confirmarExclusao(tipo, id, nome) {
+    document.getElementById('itemExcluirTipo').textContent = tipo;
+    document.getElementById('itemExcluirNome').textContent = nome;
+    const btnConfirmar = document.getElementById('btnConfirmarExclusao');
+    
+    // Define a ação com base no 'tipo' do item
+    btnConfirmar.onclick = function() {
         if (tipo === 'material') {
-          excluirMaterial(id);
+            excluirItem(`/admin/material/${id}/delete`, 'POST', carregarMateriais);
         } else if (tipo === 'inscricao') {
-          excluirInscricao(id);
+            excluirItem(`/admin/inscricao/${id}/delete`, 'POST', carregarInscricoes);
         } else if (tipo === 'servidor') {
-          excluirServidor(id);
+            excluirItem(`/admin/api/servidores/${id}`, 'DELETE', carregarServidores);
+        } else if (tipo === 'convite') { // <<< ADICIONADO O CASO PARA 'CONVITE'
+            excluirItem(`/admin/api/convites/${id}`, 'DELETE', carregarConvites);
         }
+        
+        // Esconde o modal após o clique
         var modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmacaoExclusao'));
         modal.hide();
-      };
-      var myModal = new bootstrap.Modal(document.getElementById('modalConfirmacaoExclusao'));
-      myModal.show();
-    }
+    };
+    
+    // Mostra o modal de confirmação
+    var myModal = new bootstrap.Modal(document.getElementById('modalConfirmacaoExclusao'));
+    myModal.show();
+}
+
+// Função genérica para lidar com a exclusão
+function excluirItem(url, method, callbackSucesso) {
+    fetch(url, { method: method })
+        .then(response => response.json().then(data => ({ ok: response.ok, data })))
+        .then(({ ok, data }) => {
+            if (ok) {
+                showAlert(data.message || 'Item excluído com sucesso!', 'success');
+                callbackSucesso(); // Recarrega a tabela correspondente
+            } else {
+                showAlert(`Erro ao excluir: ${data.error || 'Erro desconhecido'}`, 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Erro na requisição de exclusão:', error);
+            showAlert('Erro de comunicação ao tentar excluir o item.', 'danger');
+        });
+}
 
     function showAlert(message, type) {
       const alertPlaceholder = document.createElement('div');
@@ -1191,7 +1374,234 @@ Nenhuma inscrição encontrada</td></tr>`;
         showAlert('Erro de comunicação ao excluir servidor.', 'danger');
       });
     }
+
+
+// ==================================================================
+// ===== COLE O NOVO BLOCO DE CÓDIGO EXATAMENTE AQUI =====
+// ==================================================================
+
+// ==================================================================
+// ===== INÍCIO: BLOCO COMPLETO E UNIFICADO PARA CONVITES =====
+// ==================================================================
+
+// Variável para a instância do modal de gerenciamento
+let modalGerenciarEnvios = null;
+
+// Inicializa o modal quando o DOM estiver pronto
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('modalGerenciarEnvios')) {
+        modalGerenciarEnvios = new bootstrap.Modal(document.getElementById('modalGerenciarEnvios'));
+    }
+});
+
+// --- Funções Principais da Aba Convites ---
+
+function carregarConvites() {
+    const tbody = document.getElementById('tabelaConvites');
+    tbody.innerHTML = '<tr><td colspan="6" class="loading-state"><i class="fas fa-spinner fa-spin"></i> Carregando convites...</td></tr>';
+
+    fetch('/admin/api/convites')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            dadosConvites = data;
+            renderizarTabelaConvites();
+        })
+        .catch(error => {
+            console.error('Erro ao carregar convites:', error);
+            tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar dados.</td></tr>';
+        });
+}
+
+function renderizarTabelaConvites() {
+    const tbody = document.getElementById('tabelaConvites');
+    const count = document.getElementById('countConvites');
+    count.textContent = dadosConvites.length;
+
+    if (dadosConvites.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fas fa-inbox"></i> Nenhum convite criado.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = dadosConvites.map(convite => `
+        <tr>
+            <td>${convite.id}</td>
+            <td>${convite.titulo}</td>
+            <td>${(convite.descricao || '').substring(0, 50)}...</td>
+            <td>${formatarData(convite.data_criacao)}</td>
+            <td><span class="badge bg-info">${convite.total_respostas || 0}</span></td>
+            <td>
+                <button class="btn btn-action btn-primary" onclick="abrirModalGerenciarEnvios(${convite.id})" title="Gerenciar Envios e Respostas">
+                    <i class="fas fa-users"></i>
+                </button>
+                <button class="btn btn-action btn-warning" onclick="editarConvite(${convite.id})" title="Editar">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-action btn-danger" onclick="confirmarExclusao('convite', ${convite.id}, '${String(convite.titulo || '').replace(/'/g, "\\'")}')" title="Excluir">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function salvarConvite() {
+    const conviteId = document.getElementById('conviteId').value;
+    const titulo = document.getElementById('conviteTitulo').value;
+    const descricao = document.getElementById('conviteDescricao').value;
+    const mensagem_whatsapp = document.getElementById('conviteMensagemWhatsapp').value;
+
+    if (!titulo) {
+        showAlert('O título do convite é obrigatório.', 'danger');
+        return;
+    }
+
+    const method = conviteId ? 'PUT' : 'POST';
+    const url = conviteId ? `/admin/api/convites/${conviteId}` : '/admin/api/convites';
+
+    fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ titulo, descricao, mensagem_whatsapp })
+    })
+    .then(response => response.json().then(data => ({ ok: response.ok, data })))
+    .then(({ ok, data }) => {
+        if (ok) {
+            showAlert(data.message, 'success');
+            carregarConvites();
+            bootstrap.Modal.getInstance(document.getElementById('modalConvite')).hide();
+            document.getElementById('formConvite').reset();
+            document.getElementById('conviteId').value = '';
+        } else {
+            showAlert(`Erro: ${data.error}`, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Erro ao salvar convite:', error);
+        showAlert('Erro de comunicação ao salvar o convite.', 'danger');
+    });
+}
+
+function editarConvite(id) {
+    const convite = dadosConvites.find(c => c.id === id);
+    if (!convite) return;
+
+    document.getElementById('conviteId').value = convite.id;
+    document.getElementById('conviteTitulo').value = convite.titulo;
+    document.getElementById('conviteDescricao').value = convite.descricao;
+    document.getElementById('conviteMensagemWhatsapp').value = convite.mensagem_whatsapp;
+    document.getElementById('modalConviteLabel').textContent = 'Editar Convite';
+    
+    new bootstrap.Modal(document.getElementById('modalConvite')).show();
+}
+
+// --- Funções de Gerenciamento (Modal) ---
+
+function abrirModalGerenciarEnvios(conviteId) {
+    // Define a ação do botão "Preparar Envios" para o convite atual
+    document.getElementById('btnPrepararEnvios').onclick = () => prepararEnvios(conviteId);
+    
+    // ATUALIZAÇÃO: Define o link do botão de exportação
+    const btnExportar = document.getElementById('btnExportarExcel');
+    btnExportar.href = `/admin/api/convites/${conviteId}/exportar`;
+
+    // Carrega a lista de respostas/associados
+    carregarRespostas(conviteId);
+    // Abre o modal
+    modalGerenciarEnvios.show();
+}
+
+function prepararEnvios(conviteId) {
+    const btn = document.getElementById('btnPrepararEnvios');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Preparando...';
+
+    fetch(`/admin/api/convites/${conviteId}/preparar-envio`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(data.message, 'success');
+                carregarRespostas(conviteId);
+            } else {
+                showAlert(`Erro: ${data.error}`, 'danger');
+            }
+        })
+        .catch(err => showAlert('Erro de comunicação ao preparar envios.', 'danger'))
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-cogs me-2"></i>Preparar Envios';
+        });
+}
+
+function carregarRespostas(conviteId) {
+    const tbody = document.getElementById('tabelaRespostasConvite');
+    tbody.innerHTML = '<tr><td colspan="4" class="loading-state"><i class="fas fa-spinner fa-spin"></i> Carregando associados...</td></tr>';
+
+    fetch(`/admin/api/convites/${conviteId}/respostas`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                tbody.innerHTML = `<tr><td colspan="4" class="empty-state"><i class="fas fa-exclamation-triangle"></i> ${data.error}</td></tr>`;
+                return;
+            }
+            renderizarTabelaRespostas(data);
+        })
+        .catch(err => {
+            tbody.innerHTML = '<tr><td colspan="4" class="empty-state"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar respostas.</td></tr>';
+        });
+}
+
+function renderizarTabelaRespostas(respostas) {
+    const tbody = document.getElementById('tabelaRespostasConvite');
+    const btnExportar = document.getElementById('btnExportarExcel');
+
+    if (respostas.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><i class="fas fa-inbox"></i> Nenhum associado para enviar. Clique em "Preparar Envios".</td></tr>';
+        document.getElementById('totalRespostas').textContent = '';
+        btnExportar.style.display = 'none'; // Esconde o botão se não houver dados
+        return;
+    }
+
+ btnExportar.style.display = 'inline-block';
+
+    let respondidos = 0;
+    tbody.innerHTML = respostas.map(r => {
+        let statusHtml;
+        if (r.data_resposta && r.tipo_resposta_selecionada !== 'pendente') {
+            respondidos++;
+            const respostaFormatada = r.tipo_resposta_selecionada.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            const servico = r.participar_corpo_servico ? ' (+ Serviço)' : '';
+            statusHtml = `<span class="badge bg-success">Respondido</span>  
+<small class="text-muted">${respostaFormatada}${servico}</small>`;
+        } else {
+            statusHtml = '<span class="badge bg-warning text-dark">Pendente</span>';
+        }
+
+        return `
+            <tr>
+                <td>${r.nome_completo || 'N/A'}</td>
+                <td>${r.telefone_formatado || 'N/A'}</td>
+                <td>${r.regiao_atuacao || 'N/A'}</td>
+                <td>${statusHtml}</td>
+                <td>
+                    <input type="text" class="form-control form-control-sm" value="${r.link_unico}" readonly>
+                </td>
+            </tr>
+        `;
+    }).join('');
+    
+    document.getElementById('totalRespostas').textContent = `Respostas: ${respondidos} de ${respostas.length}`;
+}
+
+// ==================================================================
+// ===== FIM: BLOCO COMPLETO E UNIFICADO PARA CONVITES =====
+// ==================================================================
+
+
   </script>
 </body>
 </html>
+
 

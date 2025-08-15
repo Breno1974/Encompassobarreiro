@@ -43,6 +43,11 @@ def check_password(password, hashed):
     except:
         return False
     
+def gerar_token_unico():
+    """Gera um token seguro e aleatório para os links."""
+    return secrets.token_urlsafe(16)
+
+
 def is_logged_in():
     return session.get('admin_logged_in', False)
 
@@ -215,6 +220,156 @@ def inscricao():
     servidores = get_servidores_ativos()
     return render_template('inscricao.html', servidores=servidores)
 
+@app.route('/c/<string:token>') # 'c' de convite
+def pagina_de_resposta_convite(token):
+    """
+    Esta é a página que o associado vê ao clicar no link do WhatsApp.
+    O token identifica unicamente o convite enviado a ele.
+    """
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    try:
+        # =================================================================
+        # ===== CORREÇÃO FINAL AQUI =====
+        # Trocamos 'cv.titulo' por 'cv.titulo_campanha'
+        # e 'cv.descricao' por 'cv.mensagem_personalizada'.
+        # =================================================================
+        cursor.execute("""
+            SELECT 
+                rc.id as resposta_id,
+                rc.tipo_resposta_selecionada,
+                rc.participar_corpo_servico,
+                a.nome_completo,
+                cv.titulo_campanha as titulo_convite,
+                cv.mensagem_personalizada as descricao_convite
+            FROM respostas_convites rc
+            JOIN associados a ON rc.associado_id = a.id
+            JOIN convites cv ON rc.convite_id = cv.id
+            WHERE rc.token_unico = %s
+        """, (token,))
+        
+        dados_convite = cursor.fetchone()
+
+    except Exception as e:
+        print(f"Erro na página de resposta do convite: {e}")
+        return "Ocorreu um erro ao carregar os dados do convite.", 500
+    finally:
+        conn.close()
+
+    if not dados_convite:
+        # Se o token não for encontrado, o link é inválido
+        return "Link inválido ou expirado.", 404
+
+    # Passa os dados para o template renderizar a página
+    return render_template('pagina_resposta_convite.html', dados=dados_convite, token=token)
+
+
+@app.route('/c/salvar', methods=['POST'])
+def salvar_resposta_convite():
+    """
+    Processa o formulário enviado pelo associado.
+    """
+    token = request.form.get('token')
+    resposta = request.form.get('interesse') # Ex: 'quero_inscrever'
+    servico = 'servico' in request.form      # True se o checkbox foi marcado
+
+    if not token or not resposta:
+        flash('Ocorreu um erro. Por favor, tente novamente.', 'error')
+        return redirect(url_for('index')) # Redireciona para a home em caso de erro
+
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor()
+
+    try:
+        # Atualiza a tabela respostas_convites com a escolha do associado
+        cursor.execute("""
+            UPDATE respostas_convites
+            SET tipo_resposta_selecionada = %s,
+                participar_corpo_servico = %s,
+                data_resposta = CURRENT_TIMESTAMP
+            WHERE token_unico = %s
+        """, (resposta, servico, token))
+        
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        print(f"Erro ao salvar resposta: {e}") # Log do erro no console do servidor
+        flash('Não foi possível salvar sua resposta. Tente novamente.', 'error')
+        return redirect(url_for('pagina_de_resposta_convite', token=token))
+    finally:
+        conn.close()
+
+    # Redireciona para uma página de agradecimento
+    return redirect(url_for('pagina_agradecimento'))
+
+
+@app.route('/agradecimento')
+def pagina_agradecimento():
+    """Página simples de confirmação com um botão para fechar a aba."""
+    return '''
+    <!DOCTYPE html>
+    <html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <title>Obrigado!</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+        <style>
+            body { 
+                display: flex; 
+                align-items: center; 
+                justify-content: center; 
+                min-height: 100vh; 
+                background-color: #f4f7f6; 
+                font-family: 'Segoe UI', sans-serif;
+            }
+            .card { 
+                text-align: center; 
+                padding: 40px; 
+                border: none; 
+                border-radius: 15px; 
+                box-shadow: 0 6px 20px rgba(0,0,0,0.08 ); 
+                max-width: 90%;
+                width: 500px;
+            }
+            .icon-success { 
+                font-size: 5rem; 
+                color: #28a745; 
+            }
+            .btn-close-page {
+                background-color: #6c757d;
+                border-color: #6c757d;
+            }
+            .btn-close-page:hover {
+                background-color: #5a6268;
+                border-color: #5a6268;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <i class="fas fa-check-circle icon-success mb-3"></i>
+            <h2 class="card-title">Obrigado!</h2>
+            <p class="lead text-muted">Sua resposta foi registrada com sucesso.</p>
+           
+        </div>
+        <script>
+            // Fallback para navegadores que não permitem window.close() diretamente
+            // A maioria dos navegadores modernos só fecha janelas abertas por script.
+            // Este script não garante o fechamento, mas é a melhor abordagem possível.
+            const closeButton = document.querySelector('.btn-close-page');
+            closeButton.addEventListener('click', () => {
+                // Tenta fechar a janela. Se não funcionar, o usuário terá que fechar manualmente.
+                window.open('', '_self').close();
+            });
+        </script>
+    </body>
+    </html>
+    '''
+
+
 # ==================== ROTAS DE AUTENTICAÇÃO ====================
 
 @app.route('/admin')
@@ -279,7 +434,328 @@ def admin_dashboard():
     
     return render_template('admin_dashboard.html')
 
+
+# ==================================================
+# ========= API PARA GERENCIAMENTO DE CONVITES (CORRIGIDO) =========
+# ==================================================
+
+@app.route('/admin/api/convites/<int:convite_id>', methods=['DELETE'])
+def admin_api_delete_convite(convite_id):
+    """API para excluir uma campanha de convite (e suas respostas associadas)."""
+    if not is_logged_in():
+        return jsonify({'error': 'Não autorizado'}), 401
+
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor()
+    try:
+        # A exclusão em cascata (ON DELETE CASCADE) na tabela 'respostas_convites'
+        # garantirá que todas as respostas vinculadas também sejam removidas.
+        cursor.execute("DELETE FROM convites WHERE id = %s", (convite_id,))
+        
+        # Verificar se algo foi realmente excluído
+        if cursor.rowcount == 0:
+            conn.close()
+            return jsonify({'error': 'Convite não encontrado'}), 404
+
+        conn.commit()
+        return jsonify({'success': True, 'message': 'Convite excluído com sucesso!'})
+    except Exception as e:
+        conn.rollback()
+        print(f"Erro em admin_api_delete_convite: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
+
+
+@app.route('/admin/api/convites', methods=['GET'])
+def admin_api_get_convites():
+    """API para listar todos os convites criados (AJUSTADO PARA SEU SCHEMA)."""
+    if not is_logged_in():
+        return jsonify({'error': 'Não autorizado'}), 401
+    
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        # AJUSTE: Usando 'c.titulo_campanha' em vez de 'c.titulo'
+        cursor.execute("""
+            SELECT 
+                c.id, 
+                c.titulo_campanha,
+                c.mensagem_personalizada,
+                c.data_criacao,
+                (SELECT COUNT(*) FROM respostas_convites rc WHERE rc.convite_id = c.id AND rc.data_resposta IS NOT NULL) as total_respostas
+            FROM convites c
+            ORDER BY c.data_criacao DESC
+        """)
+        convites = cursor.fetchall()
+        conn.close()
+        
+        result = []
+        for convite in convites:
+            item = dict(convite)
+            # AJUSTE: Renomeando a chave para 'titulo' para que o frontend funcione sem alterações.
+            if 'titulo_campanha' in item:
+                item['titulo'] = item.pop('titulo_campanha')
+            
+            # O frontend espera 'descricao' e 'mensagem_whatsapp', vamos fornecer a mesma coisa para ambos.
+            if 'mensagem_personalizada' in item:
+                item['descricao'] = item['mensagem_personalizada']
+                item['mensagem_whatsapp'] = item['mensagem_personalizada']
+
+            if item.get('data_criacao'):
+                item['data_criacao'] = item['data_criacao'].isoformat()
+            result.append(item)
+            
+        return jsonify(result)
+
+    except Exception as e:
+        conn.close()
+        print(f"Erro em admin_api_get_convites: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/admin/api/convites', methods=['POST'])
+def admin_api_create_convite():
+    """API para criar um novo convite (AJUSTADO PARA SEU SCHEMA)."""
+    if not is_logged_in():
+        return jsonify({'error': 'Não autorizado'}), 401
+        
+    data = request.get_json()
+    # AJUSTE: O frontend envia 'titulo' e 'mensagem_whatsapp'.
+    titulo = data.get('titulo')
+    mensagem = data.get('mensagem_whatsapp')
+
+    if not titulo or not mensagem:
+        return jsonify({'error': 'Título e Mensagem são obrigatórios'}), 400
+
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor()
+    try:
+        # AJUSTE: Inserindo nas colunas 'titulo_campanha' e 'mensagem_personalizada'.
+        cursor.execute(
+            "INSERT INTO convites (titulo_campanha, mensagem_personalizada, responsavel_envio) VALUES (%s, %s, %s) RETURNING id",
+            (titulo, mensagem, session.get('admin_username'))
+        )
+        convite_id = cursor.fetchone()[0]
+        conn.commit()
+        return jsonify({'success': True, 'message': 'Convite criado com sucesso!', 'id': convite_id})
+    except Exception as e:
+        conn.rollback()
+        print(f"Erro em admin_api_create_convite: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
+
+@app.route('/admin/api/convites/<int:convite_id>', methods=['PUT'])
+def admin_api_update_convite(convite_id):
+    """API para atualizar um convite (AJUSTADO PARA SEU SCHEMA)."""
+    if not is_logged_in():
+        return jsonify({'error': 'Não autorizado'}), 401
+        
+    data = request.get_json()
+    titulo = data.get('titulo')
+    mensagem = data.get('mensagem_whatsapp')
+
+    if not titulo or not mensagem:
+        return jsonify({'error': 'Título e Mensagem são obrigatórios'}), 400
+
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor()
+    try:
+        # AJUSTE: Atualizando as colunas 'titulo_campanha' e 'mensagem_personalizada'.
+        cursor.execute(
+            "UPDATE convites SET titulo_campanha = %s, mensagem_personalizada = %s WHERE id = %s",
+            (titulo, mensagem, convite_id)
+        )
+        conn.commit()
+        return jsonify({'success': True, 'message': 'Convite atualizado com sucesso!'})
+    except Exception as e:
+        conn.rollback()
+        print(f"Erro em admin_api_update_convite: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
+
+@app.route('/admin/api/convites/<int:convite_id>/respostas', methods=['GET'])
+def get_respostas_convite(convite_id):
+    """Busca respostas de um convite (AJUSTADO PARA SEU SCHEMA DE ASSOCIADOS)."""
+    if not is_logged_in():
+        return jsonify({'error': 'Não autorizado'}), 401
+
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        # =================================================================
+        # ===== CORREÇÃO PRINCIPAL AQUI =====
+        # Trocamos 'a.telefone' por 'a.telefone_formatado' na query SQL.
+        # =================================================================
+        cursor.execute("""
+            SELECT 
+                rc.id,
+                rc.token_unico,
+                rc.data_resposta,
+                rc.tipo_resposta_selecionada,
+                rc.participar_corpo_servico,
+                a.nome_completo,
+                a.telefone_formatado,
+                a.regiao_atuacao,  -- <<< LINHA ADICIONADA
+                cv.mensagem_personalizada
+            FROM respostas_convites rc
+            JOIN associados a ON rc.associado_id = a.id
+            JOIN convites cv ON rc.convite_id = cv.id
+            WHERE rc.convite_id = %s
+            ORDER BY a.nome_completo
+        """, (convite_id,))
+        
+        respostas = cursor.fetchall()
+        
+        for resposta in respostas:
+            resposta['link_unico'] = url_for('pagina_de_resposta_convite', token=resposta['token_unico'], _external=True)
+            
+
+            if resposta.get('data_resposta'):
+                resposta['data_resposta'] = resposta['data_resposta'].isoformat()
+
+        return jsonify(respostas)
+
+            
+
+    except Exception as e:
+        print(f"Erro em get_respostas_convite: {e}")
+        return jsonify({'error': f'Erro ao buscar respostas: {str(e)}'}), 500
+    finally:
+        conn.close()
+
+
 # ==================== ROTAS DE DADOS ADMINISTRATIVOS ====================
+
+@app.route('/admin/api/convites/<int:convite_id>/exportar', methods=['GET'])
+def exportar_respostas_convite(convite_id):
+    """Exporta os dados de envio e resposta de uma campanha para Excel."""
+    if not is_logged_in():
+        return redirect(url_for('admin_login'))
+
+    try:
+        conn = psycopg2.connect(DATABASE_URL)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        # Query para buscar todos os dados necessários
+        cursor.execute("""
+            SELECT 
+                a.nome_completo,
+                a.telefone_formatado,
+                a.regiao_atuacao AS csa,
+                rc.tipo_resposta_selecionada AS status_resposta,
+                rc.participar_corpo_servico,
+                rc.data_resposta,
+                rc.token_unico
+            FROM respostas_convites rc
+            JOIN associados a ON rc.associado_id = a.id
+            WHERE rc.convite_id = %s
+            ORDER BY a.nome_completo
+        """, (convite_id,))
+        
+        dados = cursor.fetchall()
+        conn.close()
+
+        if not dados:
+            flash('Nenhum dado para exportar para esta campanha.', 'warning')
+            return redirect(url_for('admin_dashboard', active_tab='convites'))
+
+        # Processar os dados e criar o link único
+        df_data = []
+        for item in dados:
+            link_unico = url_for('pagina_de_resposta_convite', token=item['token_unico'], _external=True)
+            df_data.append({
+                'Nome Completo': item['nome_completo'],
+                'Telefone': item['telefone_formatado'],
+                'CSA': item['csa'],
+                'Link Único': link_unico,
+                'Status da Resposta': item['status_resposta'],
+                'Quer Servir': 'Sim' if item['participar_corpo_servico'] else 'Não',
+                'Data da Resposta': item['data_resposta']
+            })
+        
+        df = pd.DataFrame(df_data)
+
+        # Criar o arquivo Excel em memória
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name=f'Respostas_Convite_{convite_id}', index=False)
+        output.seek(0)
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"export_convite_{convite_id}_{timestamp}.xlsx"
+        
+        return send_file(
+            output,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            as_attachment=True,
+            download_name=filename
+        )
+
+    except Exception as e:
+        print(f"Erro ao exportar dados do convite: {e}")
+        flash(f"Erro ao exportar dados: {e}", "error")
+        return redirect(url_for('admin_dashboard', active_tab='convites'))
+
+
+
+
+@app.route('/admin/api/convites/<int:convite_id>/preparar-envio', methods=['POST'])
+def preparar_envio_convite(convite_id):
+    """
+    Prepara os registros na tabela 'respostas_convites' para todos os associados,
+    gerando um token único para cada um e definindo a resposta inicial como 'pendente'.
+    """
+    if not is_logged_in():
+        return jsonify({'error': 'Não autorizado'}), 401
+
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        # 1. Buscar todos os associados
+        cursor.execute("SELECT id FROM associados")
+        associados = cursor.fetchall()
+        
+        if not associados:
+            return jsonify({'error': 'Nenhum associado encontrado no banco de dados.'}), 404
+
+        # 2. Inserir um registro para cada associado na tabela de respostas.
+        #    Ajustado para incluir 'tipo_resposta_selecionada' para cumprir o NOT NULL.
+        #    O campo 'data_resposta' será deixado como NULL.
+        sql_insert = """
+            INSERT INTO respostas_convites (convite_id, associado_id, token_unico, tipo_resposta_selecionada, data_resposta)
+            VALUES (%s, %s, %s, 'pendente', NULL)
+            ON CONFLICT (convite_id, associado_id) DO NOTHING;
+        """
+        
+        registros_inseridos = 0
+        for associado in associados:
+            token = gerar_token_unico()
+            cursor.execute(sql_insert, (convite_id, associado['id'], token))
+            registros_inseridos += cursor.rowcount # rowcount será 1 para inserção, 0 para conflito
+
+        conn.commit()
+        
+        if registros_inseridos == 0:
+            message = 'Todos os associados já estavam preparados para esta campanha.'
+        else:
+            message = f'{registros_inseridos} novos convites preparados para envio.'
+
+        return jsonify({'success': True, 'message': message})
+
+    except Exception as e:
+        conn.rollback()
+        # Log do erro para depuração no servidor
+        print(f"Erro em preparar_envio_convite: {e}")
+        return jsonify({'error': f'Erro ao preparar envios: {str(e)}'}), 500
+    finally:
+        conn.close()
+
 
 @app.route('/admin/api/materiais')
 def admin_api_materiais():
