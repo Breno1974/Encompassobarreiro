@@ -18,7 +18,7 @@
         .card { 
             border: none; 
             border-radius: 15px; 
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08  ); 
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08 ); 
         }
         .card-header { 
             background: linear-gradient(135deg, #007bff, #0056b3); 
@@ -56,6 +56,35 @@
             margin-right: 10px;
             width: 20px;
             text-align: center;
+        }
+        /* Estilos para a seção de copiar PIX */
+        .pix-copy-section {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #e9f5ff;
+            border: 1px solid #bde0ff;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .pix-copy-section .pix-key {
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+            color: #0056b3;
+            background-color: #fff;
+            padding: 0.5rem;
+            border-radius: 5px;
+            display: block;
+            margin-bottom: 1rem;
+            word-wrap: break-word; /* Garante que a chave não quebre o layout */
+        }
+        .btn-copy {
+            background-color: #28a745;
+            color: white;
+            border: none;
+        }
+        .btn-copy:hover {
+            background-color: #218838;
+            color: white;
         }
         .form-check-input:checked { 
             background-color: #007bff; 
@@ -171,17 +200,52 @@
                             <li>Quarto Coletivo: R$ 299,90</li>
                         </ul>
                         <p><i class="fas fa-money-bill-wave"></i> <strong>Inscrição Mínima:</strong> R$ 50,00 (via PIX)</p>
+                        
+                        <!-- SEÇÃO PARA COPIAR A CHAVE PIX -->
+                        <div class="pix-copy-section">
+                            <p class="mb-2"><strong>Chave PIX (E-mail):</strong></p>
+                            <span id="pix-key" class="pix-key">eventos.csabarreiro@gmail.com</span>
+                            <button type="button" id="copy-button" class="btn btn-copy">
+                                <i class="fas fa-copy"></i> Copiar Chave
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- BOTÃO DE ENVIO MOVIDO PARA CÁ -->
                     <button type="submit" class="btn btn-primary w-100 py-3 fs-5 mt-4">Enviar Resposta</button>
 
-                    <!-- IMAGEM DO BANNER AGORA FICA POR ÚLTIMO -->
-                    <img src="{{ url_for('static', filename='banner.png') }}" alt="Banner do Evento Buscando Dentro de Si" class="event-image">
+                    <img src="{{ url_for('static', filename='banner.jpg') }}" alt="Banner do Evento Buscando Dentro de Si" class="event-image">
 
                 </form>
             </div>
         </div>
     </div>
+
+    <!-- SCRIPT PARA A FUNCIONALIDADE DE COPIAR -->
+    <script>
+        document.getElementById('copy-button').addEventListener('click', function() {
+            // Seleciona o texto da chave PIX
+            const pixKey = document.getElementById('pix-key').innerText;
+            
+            // Usa a API do Clipboard para copiar o texto
+            navigator.clipboard.writeText(pixKey).then(() => {
+                // Feedback visual para o usuário
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                this.classList.remove('btn-copy');
+                this.classList.add('btn-success');
+                
+                // Volta ao texto original após 2 segundos
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.classList.remove('btn-success');
+                    this.classList.add('btn-copy');
+                }, 2000);
+            }).catch(err => {
+                console.error('Erro ao copiar a chave PIX: ', err);
+                alert('Não foi possível copiar a chave. Por favor, selecione e copie manualmente.');
+            });
+        });
+    </script>
+
 </body>
 </html>
