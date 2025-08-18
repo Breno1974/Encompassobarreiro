@@ -18,7 +18,7 @@
         .card { 
             border: none; 
             border-radius: 15px; 
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08 ); 
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08  ); 
         }
         .card-header { 
             background: linear-gradient(135deg, #007bff, #0056b3); 
@@ -26,6 +26,36 @@
             border-top-left-radius: 15px; 
             border-top-right-radius: 15px; 
             padding: 1.5rem;
+        }
+        .event-image {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin-top: 2rem;
+            margin-bottom: 0; 
+        }
+        .event-details {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem; 
+            margin-bottom: 1.5rem;
+        }
+        .event-details h5 {
+            color: #0056b3;
+            border-bottom: 2px solid #dee2e6;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .event-details p {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        .event-details .fas {
+            color: #007bff;
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
         }
         .form-check-input:checked { 
             background-color: #007bff; 
@@ -39,7 +69,6 @@
         .list-group-item:hover { 
             background-color: #f8f9fa; 
         }
-        /* Estilo para o separador "E também..." */
         .separator {
             display: flex;
             align-items: center;
@@ -59,10 +88,27 @@
         .separator:not(:empty)::after {
             margin-left: .5em;
         }
-        /* Estilo para a opção de serviço, dando mais destaque */
         .service-option {
             background-color: #e9f5ff;
             border-left: 4px solid #007bff;
+        }
+        .qr-code-section {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        .qr-code-section h5 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        .qr-code-section img {
+            max-width: 200px;
+            height: auto;
+            border: 1px solid #ddd;
+            padding: 5px;
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -73,6 +119,7 @@
                 <h2 class="mb-0">{{ dados.titulo_convite }}</h2>
             </div>
             <div class="card-body p-4 p-md-5">
+                
                 <h4 class="card-title text-center mb-3">Olá, {{ dados.nome_completo }}!</h4>
                 <p class="text-muted text-center mb-4">{{ dados.descricao_convite }}</p>
                 
@@ -81,7 +128,6 @@
                     
                     <h5 class="text-muted mb-3">Qual seu interesse no evento?</h5>
                     
-                    <!-- Opções principais com radio buttons -->
                     <div class="list-group mb-4">
                         <label class="list-group-item d-flex gap-3">
                             <input class="form-check-input flex-shrink-0" type="radio" name="interesse" value="quero_inscrever" required>
@@ -97,12 +143,10 @@
                         </label>
                     </div>
 
-                    <!-- Separador visual -->
                     <div class="separator">
                         <i class="fas fa-plus-circle mx-2"></i>
                     </div>
 
-                    <!-- Opção adicional com checkbox -->
                     <div class="list-group">
                         <label class="list-group-item d-flex gap-3 service-option">
                             <input class="form-check-input flex-shrink-0" type="checkbox" id="servicoCheck" name="servico">
@@ -110,7 +154,31 @@
                         </label>
                     </div>
 
+                    <div class="qr-code-section">
+                        <h5><i class="fas fa-qrcode"></i> Faça sua Inscrição</h5>
+                        <p class="text-muted">Aponte a câmera do seu celular para o código abaixo.</p>
+                        <img src="{{ url_for('static', filename='inscricao_qrcode.png') }}" alt="QR Code para Inscrição">
+                    </div>
+
+                    <div class="event-details">
+                        <h5><i class="fas fa-info-circle"></i> Detalhes do Evento</h5>
+                        <p><i class="fas fa-calendar-alt"></i> <strong>Data:</strong> 10, 11 e 12 de Julho de 2026</p>
+                        <p><i class="fas fa-map-marker-alt"></i> <strong>Local:</strong> Pousada do Rei - R. Santa Efigênia, 320, Santa Rita, Sarzedo - MG</p>
+                        <p><i class="fas fa-bed"></i> <strong>Valores:</strong></p>
+                        <ul>
+                            <li>Quarto Duplo: R$ 380,00</li>
+                            <li>Quarto Triplo: R$ 350,00</li>
+                            <li>Quarto Coletivo: R$ 299,90</li>
+                        </ul>
+                        <p><i class="fas fa-money-bill-wave"></i> <strong>Inscrição Mínima:</strong> R$ 50,00 (via PIX)</p>
+                    </div>
+
+                    <!-- BOTÃO DE ENVIO MOVIDO PARA CÁ -->
                     <button type="submit" class="btn btn-primary w-100 py-3 fs-5 mt-4">Enviar Resposta</button>
+
+                    <!-- IMAGEM DO BANNER AGORA FICA POR ÚLTIMO -->
+                    <img src="{{ url_for('static', filename='banner.png') }}" alt="Banner do Evento Buscando Dentro de Si" class="event-image">
+
                 </form>
             </div>
         </div>
